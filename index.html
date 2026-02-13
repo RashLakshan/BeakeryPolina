@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bakery Polina - v2</title>
+    <meta name="description"
+        content="Bakery inventory management system for tracking daily delivery batches, remaining stock, and sales.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sinhala+Sangam+MN&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3">
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loader">
+            <div class="bread-icon">🍞</div>
+            <p>Loading Bakery Data...</p>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div id="appContainer" class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <span class="logo-icon">🥪</span>
+                    <div>
+                        <h1>Bakery Polina</h1>
+                        <p class="subtitle">Daily Inventory Tracker</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="date-selector">
+                        <label for="dateInput">📅 Date:</label>
+                        <input type="date" id="dateInput">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Toolbar -->
+        <section class="toolbar">
+            <button id="addProductBtn" class="btn btn-primary">
+                <span>➕</span> Add Product
+            </button>
+            <button id="manageProductsBtn" class="btn btn-info">
+                <span>⚙️</span> Actions
+            </button>
+
+            <button id="dailyReportBtn" class="btn btn-primary">
+                <span>📄</span> Daily Report
+            </button>
+        </section>
+
+        <!-- Stats Bar -->
+        <section class="stats-bar">
+            <div class="stat-card" id="statTotalProducts">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Products</span>
+                </div>
+            </div>
+            <div class="stat-card" id="statTotalSent">
+                <div class="stat-icon">🚚</div>
+                <div class="stat-info">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Total Sent</span>
+                </div>
+            </div>
+            <div class="stat-card" id="statTotalRemaining">
+                <div class="stat-icon">🏪</div>
+                <div class="stat-info">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Remaining</span>
+                </div>
+            </div>
+            <div class="stat-card" id="statTotalSold">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Sold</span>
+                </div>
+            </div>
+            <div class="stat-card" id="statTotalRevenue">
+                <div class="stat-icon">💵</div>
+                <div class="stat-info">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Revenue (Rs)</span>
+                </div>
+            </div>
+            <div class="stat-card" id="statRemainingValue">
+                <div class="stat-icon">📉</div>
+                <div class="stat-info">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Stock Value (Rs)</span>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Inventory Table -->
+        <section class="table-container">
+            <div class="table-scroll">
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th class="th-item" rowspan="2">Item</th>
+                            <th class="th-price" rowspan="2">Price<br>(Rs)</th>
+                            <th colspan="6" class="th-batches">Delivery Batches</th>
+                            <th class="th-total" rowspan="2">Total<br>Sent</th>
+                            <th class="th-remaining" rowspan="2">Remaining</th>
+                            <th class="th-stock-value" rowspan="2">Stock Value<br>(Rs)</th>
+                            <th class="th-sold" rowspan="2">Sold</th>
+                            <th class="th-revenue" rowspan="2">Revenue<br>(Rs)</th>
+                        </tr>
+                        <tr>
+                            <th class="th-batch">B1</th>
+                            <th class="th-batch">B2</th>
+                            <th class="th-batch">B3</th>
+                            <th class="th-batch">B4</th>
+                            <th class="th-batch">B5</th>
+                            <th class="th-batch">B6</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryBody">
+                        <!-- Rows will be dynamically generated -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">🍰</div>
+                <h3>No Products Yet</h3>
+                <p>Click "Add Product" to start tracking your bakery inventory</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Manage Products Modal (New) -->
+    <div id="manageProductsModal" class="modal-overlay">
+        <div class="modal modal-md">
+            <div class="modal-header">
+                <h2>Manage Products</h2>
+                <button id="manageModalCloseBtn" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="product-list-header">
+                    <span>Product Name</span>
+                    <span>Price</span>
+                    <span>Actions</span>
+                </div>
+                <div id="productListContainer" class="product-list-container">
+                    <!-- Product items will be injected here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="manageModalDoneBtn" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Product</h2>
+                <button id="modalCloseBtn" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="productNameInput">Product Name</label>
+                    <input type="text" id="productNameInput" placeholder="Enter product name..." autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="productPriceInput">Unit Price (Rs)</label>
+                    <input type="number" id="productPriceInput" placeholder="Enter price per unit..." min="0"
+                        step="0.01" autocomplete="off">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="modalSaveBtn" class="btn btn-primary">Save Product</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal modal-sm">
+            <div class="modal-header modal-header-danger">
+                <h2>Delete Product</h2>
+                <button id="deleteModalCloseBtn" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteProductName"></strong>?</p>
+                <p class="text-muted">This will also delete all daily records for this product.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="deleteCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="deleteConfirmBtn" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span id="toastMessage"></span>
+    </div>
+    </div> <!-- End appContent -->
+
+    <!-- PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="app.js?v=2"></script>
+</body>
+
+</html>
